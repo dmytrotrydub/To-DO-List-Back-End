@@ -1,0 +1,19 @@
+{
+  "name": "todo-list-back-end",
+  "version": "1.0.0",
+  "description": "Application to track To-Do activities Back End",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmytrotrydub/To-DO-List-Back-End.git"
+  },
+  "author": "Dmytro Trydub, Dmitry Chayka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmytrotrydub/To-DO-List-Back-End/issues"
+  },
+  "homepage": "https://github.com/dmytrotrydub/To-DO-List-Back-End#readme"
+}
