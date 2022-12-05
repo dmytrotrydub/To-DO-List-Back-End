@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 require('dotenv').config({ path: './.env' })
 const cors = require('cors');
-// const config = require('./knexfile')[environment];
-// const db = require('knex')(config);
+const routes = require('./routes/routes');
+
 
 app.use(express.json());
 app.use(cors());
+
+app.use('/',routes)
 
 
 
