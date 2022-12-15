@@ -4,5 +4,6 @@ const router = express.Router();
 const toDoListController = require('../controllers/toDoListController');
 
 router.post('/', toDoListController.postToDoItem);
+router.get('/', toDoListController.getToDoItemsList)
 
 module.exports = router;
