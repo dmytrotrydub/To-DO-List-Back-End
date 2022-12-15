@@ -30,23 +30,29 @@ module.exports.postToDoItem = async (req, res) => {
 module.exports.getToDoItemsList = async (req, res) => {
   const listToReturn = await db('toDoList').select('id', 'Description', 'updated_at');
 
+  // Sorting dates oldest posted to newest posted
+listToReturn.sort((a, b) =>new Date(a.updated_at)- new Date(b.updated_at));
+  // console.log(listToReturn);
+
+  console.log(listToReturn);
+
   // Setting start point for each task's timer
-
   listToReturn.forEach((toDoItem) => {
-
     const today = new Date();
     const dateStartTime = new Date(toDoItem.updated_at);
     const diffTime = today - dateStartTime;
     const days = Math.floor(diffTime / 86400000);
     const hours = Math.floor((diffTime % 86400000) / 3600000);
     const mins = Math.round(((diffTime % 86400000) % 3600000) / 60000);
-    
+
     toDoItem.timerStart = {
       daysElapsed: days,
       hoursElapsed: hours,
-      minutesElapsed: mins
-    }
+      minutesElapsed: mins,
+    };
   });
+
+
 
   res.json(listToReturn).status(200);
 };
