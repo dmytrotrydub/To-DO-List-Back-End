@@ -57,24 +57,25 @@ module.exports.getToDoItemsList = async (req, res) => {
 };
 
 module.exports.deleteToDoItem = async (req, res) => {
-
+  console.log(req.body);
   const idToDelete = req.body.id;
   try {
     // Saving deleted item into database for future reference
     const deletedItemLog = {
       id: req.body.id,
       Description: req.body.Description,
-      deleted_at:db.fn.now()
-    }
+      deleted_at: db.fn.now(),
+    };
 
-    await db('deletedItemsList').insert(deletedItemLog);
-    // Deleting toDOItem from database 
-    const matchedItem = await db('todoList').where('id', idToDelete).del();
-
-// Response to a front End
-    res.json(`${matchedItem}: item deleted`);
-
+    await db('deletedItemsList')
+      .insert(deletedItemLog)
+      .then(() => {});
   } catch (err) {
     res.json('Deleting of to-do item failed');
   }
+  // Deleting toDOItem from database
+
+  const matchedItem = await db('todoList').where('id', idToDelete).del();
+  // Response to a front End
+  res.json(`${matchedItem}: item deleted`);
 };

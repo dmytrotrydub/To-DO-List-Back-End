@@ -11,6 +11,8 @@ exports.seed = async function (knex) {
     .del()
     .then(function () {
       return knex('todoList').insert(toDoList);
+    }).then(function () {
+      return knex('deletedItemsList').insert(toDoList);
     })
 
 };
