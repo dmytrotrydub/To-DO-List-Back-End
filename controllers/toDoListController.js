@@ -10,7 +10,7 @@ module.exports.postToDoItem = async (req, res) => {
   }
   // Assigning an id to a new to-do task
   const taskId = uuidv4();
-  console.log(req.body);
+
   //Object to post to a database
   const toDoItem = {
     id: taskId,
@@ -28,31 +28,54 @@ module.exports.postToDoItem = async (req, res) => {
 };
 
 module.exports.getToDoItemsList = async (req, res) => {
-  const listToReturn = await db('toDoList').select('id', 'Description', 'updated_at');
+  try {
+    const listToReturn = await db('toDoList').select('id', 'Description', 'updated_at');
+    // Sorting dates oldest posted to newest posted
+    listToReturn.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
+    // console.log(listToReturn);
 
-  // Sorting dates oldest posted to newest posted
-listToReturn.sort((a, b) =>new Date(a.updated_at)- new Date(b.updated_at));
-  // console.log(listToReturn);
+    // Setting start point for each task's timer
+    listToReturn.forEach((toDoItem) => {
+      const today = new Date();
+      const dateStartTime = new Date(toDoItem.updated_at);
+      const diffTime = today - dateStartTime;
+      const days = Math.floor(diffTime / 86400000);
+      const hours = Math.floor((diffTime % 86400000) / 3600000);
+      const mins = Math.round(((diffTime % 86400000) % 3600000) / 60000);
 
-  console.log(listToReturn);
+      toDoItem.timerStart = {
+        daysElapsed: days,
+        hoursElapsed: hours,
+        minutesElapsed: mins,
+      };
+    });
 
-  // Setting start point for each task's timer
-  listToReturn.forEach((toDoItem) => {
-    const today = new Date();
-    const dateStartTime = new Date(toDoItem.updated_at);
-    const diffTime = today - dateStartTime;
-    const days = Math.floor(diffTime / 86400000);
-    const hours = Math.floor((diffTime % 86400000) / 3600000);
-    const mins = Math.round(((diffTime % 86400000) % 3600000) / 60000);
+    res.json(listToReturn).status(200);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-    toDoItem.timerStart = {
-      daysElapsed: days,
-      hoursElapsed: hours,
-      minutesElapsed: mins,
+module.exports.deleteToDoItem = async (req, res) => {
+  console.log(req.body);
+  const idToDelete = req.body.id;
+  try {
+    // Saving deleted item into database for future reference
+    const deletedItemLog = {
+      id: req.body.id,
+      Description: req.body.Description,
+      deleted_at: db.fn.now(),
     };
-  });
 
+    await db('deletedItemsList')
+      .insert(deletedItemLog)
+      .then(() => {});
+  } catch (err) {
+    res.json('Deleting of to-do item failed');
+  }
+  // Deleting toDOItem from database
 
-
-  res.json(listToReturn).status(200);
+  const matchedItem = await db('todoList').where('id', idToDelete).del();
+  // Response to a front End
+  res.json(`${matchedItem}: item deleted`);
 };
